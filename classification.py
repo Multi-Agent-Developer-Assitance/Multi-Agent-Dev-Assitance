@@ -9,11 +9,11 @@ classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnl
 
 # ===== DEFINE CATEGORIES =====
 CATEGORIES = [
-    "Research-Based",
+    #(Explaination ,Planning, Reserach & refernces, Implementation, Debugging & Error handling)
     "Generative/Coding",
     "Testing/QA",
-    "Debugging/Error Solving",
-    "Comparison/Recommendation"
+    "Documentation",
+    "Review/Feedback"
 ]
 
 # ===== CLASSIFICATION FUNCTION =====
