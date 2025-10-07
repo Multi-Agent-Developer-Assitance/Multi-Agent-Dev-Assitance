@@ -1,41 +1,46 @@
-# ===== IMPORTS =====
-# pip install torch transformers
+from openai import OpenAI
 
-from transformers import pipeline  # for using pre-trained models from HuggingFace
+client = OpenAI()
 
-# ===== LOAD MODEL =====
-# facebook/bart-large-mnli is a zero-shot text classification model
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
-
-# ===== DEFINE CATEGORIES =====
-CATEGORIES = [
-    #(Explaination ,Planning, Reserach & refernces, Implementation, Debugging & Error handling)
-    "Generative/Coding",
-    "Testing/QA",
-    "Documentation",
-    "Review/Feedback"
+def prompt_injection(input_question: str) -> str:
+    return f"""
+Classify the following question into one of these categories:
+["Code Generation and Implementation - Writing new code, creating functions, implementing algorithms, building applications",
+"Debugging and Error Handling - Fixing bugs, resolving errors, troubleshooting issues, exception handling",
+"Code Review and Optimization - Analyzing code quality, performance optimization, refactoring, code improvement",
+"Testing and Quality Assurance - Writing tests, unit testing, integration testing, test automation, QA processes",
+"Documentation and Explanation - Writing documentation, explaining concepts, creating tutorials, code comments",
+"Research and Learning - Learning new technologies, understanding concepts, finding resources, educational content",
+"System Design and Architecture - Designing systems, architectural decisions, scalability, infrastructure",
+"Data Analysis and Processing - Data manipulation, analysis, visualization, machine learning, statistics",
+"Project Scope Planning - Defining project objectives, deliverables, and boundaries",
+    "Resource Planning - Allocating people, tools, budget, and time effectively",
+    "Schedule Planning - Creating timelines, milestones, and Gantt charts",
+    "Risk Planning - Identifying, assessing, and mitigating potential project risks",
+    "Budget Planning - Estimating costs, preparing budgets, and controlling expenditures",
+    "Communication Planning - Defining stakeholder communication strategies and channels",
+    "Quality Planning - Setting quality standards and quality assurance processes",
+    "Change Management Planning - Planning for adapting project scope, schedule, and resources"
 ]
 
-# ===== CLASSIFICATION FUNCTION =====
-def classify_question(question):
-    # Perform zero-shot classification
-    result = classifier(question, CATEGORIES)
-    
-    # Extract the top predicted category and confidence
-    best_category = result['labels'][0]
-    confidence = result['scores'][0]
-    
-    # Print and return result
-    print(f"\n Predicted Category: {best_category} (Confidence: {confidence:.2f})")
-    return best_category
+Question: {input_question}
 
-# ===== MAIN PROGRAM LOOP =====
-if __name__ == "__main__":
-    print("=== Open-Source Question Classifier ===")
-    
-    while True:
-        question = input("\nEnter your question (or type 'exit' to quit): ").strip()
-        if question.lower() == "exit":
-            print("Goodbye ")
-            break
-        classify_question(question)
+Only respond with the category name, nothing else.
+"""
+while True:
+    question=input("Enter your programming-related question: ")
+    prompt = prompt_injection(question)
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a classification assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0  # Low randomness for deterministic classification
+    )
+
+    print(response.choices[0].message.content.strip())
+    # exit loop if user types 'exit'
+    if question.lower() == 'exit':
+        break
