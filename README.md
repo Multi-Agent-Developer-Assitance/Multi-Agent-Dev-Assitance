@@ -38,15 +38,13 @@ If failures are detected, the system triggers a debug-feedback loop before produ
 
 ### Router Architecture
 
-![Router Architecture](router.png)
-
 The Router classifies incoming tasks and selects the appropriate workflow based on task type and confidence score.
 
 ---
 
 ### General Multi-Agent Workflow
 
-![General Workflow](generalDiagram.png)
+![General Workflow](generalDiagram (1).png)
 
 The Router dynamically selects one of the following workflows:
 
