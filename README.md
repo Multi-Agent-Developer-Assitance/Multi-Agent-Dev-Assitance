@@ -44,7 +44,7 @@ The Router classifies incoming tasks and selects the appropriate workflow based 
 
 ### General Multi-Agent Workflow
 
-![General Workflow](generalDiagram (1).png)
+![General Workflow](generalDiagram.png)
 
 The Router dynamically selects one of the following workflows:
 
