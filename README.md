@@ -1,123 +1,175 @@
-Adaptive Multi-Agent Developer Assistance (AMO)
+# Adaptive Multi-Agent Orchestrator (AMO)
 
-Adaptive Multi-Agent Orchestrator (AMO) is a dynamic multi-agent LLM framework designed to improve reliability, correctness, and transparency in AI-assisted software development.
-Modern Large Language Models (LLMs) are powerful but suffer from hallucinations, reasoning drift, inconsistent outputs across multi-step workflows, and lack of internal verification. AMO addresses these limitations by replacing monolithic LLM workflows with structured, role-specialized multi-agent pipelines.
+## Overview
 
-OVERVIEW
-Instead of relying on a single LLM, AMO routes tasks through specialized agents:
-Planner Agent
-Generator Agent
-Tester Agent
-Debugger Agent
-Researcher / Reviewer Agents
+Adaptive Multi-Agent Orchestrator (AMO) is a role-aware LLM orchestration framework designed to improve reliability, correctness, and robustness in AI-assisted software engineering tasks.
 
-Router Agent (LLM-based task classifier)
-Each agent is responsible for a specific stage of the development lifecycle. The Router intelligently selects the optimal workflow based on task type and confidence score.
-This modular design improves correctness, reduces hallucinations, and introduces explicit verification loops.
+Instead of relying on a single monolithic LLM, AMO routes tasks through specialized agents:
 
-CORE IDEA
-No single model performs well across all reasoning domains.
-From benchmark evaluations:
-DeepSeek-Coder (HumanEval Pass@1): 42.30%
-CodeGemma-2B (HumanEval Pass@1): 35.90%
-Microsoft Phi-1.5 (PlanBench BERTScore): 82.24%
+- Planner  
+- Generator  
+- Tester  
+- Debugger  
+- Researcher  
+- Reviewer  
 
-Each model has strengths in different domains:
-Phi-1.5 performs best at structured planning
-DeepSeek-Coder performs best at code generation
-CodeGemma performs well in debugging
-AMO leverages this specialization by assigning models to roles where they perform best.
+This modular architecture improves:
 
-WORKFLOWS
-Code Generation Workflow
+- Code correctness (Pass@1)
+- Planning quality
+- Debug robustness
+- Hallucination reduction
+- Execution transparency
+
+---
+
+## System Architecture
+
+### Sequence Workflow (End-to-End Execution)
+
+![Sequence Workflow](sequence-DL.png)
+
+This diagram shows the full execution flow:
+User → Router → Planner → Generator → Tester → Debugger → Final Output
+
+If failures are detected, the system triggers a debug-feedback loop before producing the final result.
+
+---
+
+### Router Architecture
+
+![Router Architecture](router.png)
+
+The Router classifies incoming tasks and selects the appropriate workflow based on task type and confidence score.
+
+---
+
+### General Multi-Agent Workflow
+
+![General Workflow](generalDiagram.png)
+
+The Router dynamically selects one of the following workflows:
+
+- Code Generation
+- Debugging
+- Testing
+- Research
+- Review / QA
+
+Each workflow is modular and role-specific.
+
+---
+
+### Code Generation Multi-Agent Pipeline
+
+![Coder Multi-Agent Workflow](coderAgent.png)
+
+Pipeline:
+
 Planner → Generator → Tester → Debugger (if needed)
 
-The Planner decomposes the problem.
-The Generator writes code based on the plan.
-The Tester executes unit tests.
-If tests fail, the Debugger performs minimal targeted fixes.
-The loop continues until validation passes.
+This ensures:
 
-Debugging Workflow
-Planner → Debugger
+- Structured task decomposition
+- Execution-based validation
+- Targeted repair instead of full regeneration
 
-Used when code is already provided and needs correction.
+---
 
-Testing Workflow
-Planner → Tester → Debugger
+### Multi-Agent Execution Overview
 
-Used for test generation and validation tasks.
+![Multi-Agent System](multiagent.png)
 
-Research Workflow
-Planner → Researcher → Reviewer
+This diagram illustrates how different agents collaborate and exchange structured state information during orchestration.
 
-Used for conceptual or API-related queries.
+---
 
-Review / QA Workflow
-Planner → Reviewer
+## Algorithm
 
-Used for explanation, summarization, or critique tasks.
+![Adaptive Multi-Agent Orchestrator Algorithm](PseudoAlgo-1.png)
 
-ROUTER DESIGN
+The orchestration process consists of:
 
-The Router computes:
+1. Router classification
+2. Multi-agent execution
+3. Validation & debug feedback loop
+4. Final evaluation (Pass@1, BERTScore)
 
-a* = argmax P(ai | x, H)
+---
 
-Confidence score:
-C(x) = max P(ai | x, H)
+## Experimental Evaluation
 
-If confidence is below threshold, the system routes through a fallback multi-agent workflow.
-Routing decisions are based on:
-Task instruction
-Query complexity
-Error-handling requirements
-Semantic ambiguity
+Benchmarks used:
 
-EVALUATION BENCHMARKS
-HumanEval
-HumanEval+
-PlanBench
+- HumanEval
+- HumanEval+
+- PlanBench
 
-Metrics Used:
-Pass@1
-Pass@k
-BERTScore
+Primary Metrics:
 
-Hallucination analysis
-Repair convergence
+- Pass@1 (Code correctness)
+- BERTScore (Planning quality)
 
-RESULTS
-Multi-Agent Code Generation (HumanEval): 81.10% Pass@1
-Multi-Agent Debug/Test (HumanEval+): 71.90% Pass@1
-Multi-Agent Planning (PlanBench): 86.70%
+---
 
-Best Single-Model Baseline (DeepSeek-Coder): 42.30%
+## Multi-Agent vs Baseline Performance
 
-Absolute improvement over baseline: +38.8%
-Relative improvement: +91.7%
+![Baseline Comparison](baselinesGraph.png)
 
-These results confirm that structured planning and repair loops significantly improve correctness.
-PERFORMANCE EVOLUTION
-Stage 1 – Single Model
-42.30% Pass@1
+The multi-agent pipeline significantly outperforms the best single-model baselines across coding and planning tasks.
 
-Stage 2 – Planner + Generator
-74.39% Pass@1
+---
 
-Stage 3 – + Tester
-Improved robustness and execution validation
+## Code Generation Evolution
 
-Stage 4 – + Debugger Loop
-81.10% Pass@1
+![Code Generation Evolution](coderagentevolution.png)
 
-Each additional agent contributes measurable improvement.
-WHY AMO WORKS
-Explicit task decomposition reduces reasoning drift
-Separation of planning and synthesis improves logical consistency
-Execution-driven validation prevents silent failures
-Debugger performs minimal targeted fixes instead of regeneration
-Structured state propagation prevents context loss
-Confidence-based routing improves workflow selection
+Performance progression:
 
-Reliable AI-assisted development is achieved through orchestration, not model size.
+- Single model baseline → 42.30%
+- Planner + Generator → 74.39%
+- Full Multi-Agent + Debug Loop → 81.10%
+
+This demonstrates the impact of structured planning and iterative validation.
+
+---
+
+## Performance Improvement Analysis
+
+![Performance Analysis](analysis.png)
+
+The final multi-agent system achieves:
+
+- +38.8% absolute improvement
+- +91.7% relative improvement over baseline
+
+Debug-feedback loops and agent specialization are the primary contributors.
+
+---
+
+## Key Insights
+
+1. No single LLM performs best across all reasoning domains.
+2. Planning significantly reduces logical and structural errors.
+3. Debug-feedback loops improve robustness and reduce hallucination.
+4. Smaller models combined via orchestration outperform monolithic systems.
+
+---
+
+## Future Work
+
+- Reinforcement-based routing optimization
+- Self-learning debugger
+- Adaptive pipeline construction
+- Meta-routing confidence tuning
+- Continual memory integration
+
+---
+
+## Conclusion
+
+The Adaptive Multi-Agent Orchestrator demonstrates that reliability in AI-assisted software engineering emerges from structured, modular, and verifiable multi-agent workflows rather than increasing model size alone.
+
+Across benchmarks, AMO consistently outperforms monolithic LLM baselines in correctness, robustness, and planning quality.
+
+---
