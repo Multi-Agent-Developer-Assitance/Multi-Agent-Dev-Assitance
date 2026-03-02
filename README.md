@@ -27,7 +27,7 @@ This modular architecture improves:
 
 ### Sequence Workflow (End-to-End Execution)
 
-![Sequence Workflow](sequence-DL (1).png)
+![Sequence Workflow](sequence-DL.png)
 
 This diagram shows the full execution flow:
 User → Router → Planner → Generator → Tester → Debugger → Final Output
