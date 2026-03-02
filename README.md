@@ -84,7 +84,7 @@ This diagram illustrates how different agents collaborate and exchange structure
 
 ## Algorithm
 
-![Adaptive Multi-Agent Orchestrator Algorithm](PseudoAlgo-1.png)
+![Adaptive Multi-Agent Orchestrator Algorithm](algo.png)
 
 The orchestration process consists of:
 
